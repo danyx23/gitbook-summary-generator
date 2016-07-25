@@ -13,7 +13,8 @@
     "purescript-node-fs-aff": "^1.0.0",
     "purescript-markdown": "https://github.com/slamdata/purescript-markdown",
     "purescript-yargs": "^1.0.0",
-    "purescript-arrays": "^1.0.0"
+    "purescript-arrays": "^1.0.0",
+    "purescript-pathy": "^1.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^1.0.0"

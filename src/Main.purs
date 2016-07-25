@@ -14,23 +14,24 @@ import Data.String (charAt, singleton, lastIndexOf)
 import Node.FS (FS)
 import Node.FS.Aff (stat, readdir)
 import Node.FS.Stats (isDirectory)
-import Node.Yargs.Applicative (flag, yarg, runY)
-import Node.Yargs.Setup (example, usage)
-import Data.Array (uncons)
+import Node.Yargs.Applicative (yarg, runY)
+import Node.Yargs.Setup (usage)
 
-app :: forall eff. Array String -> Eff ( err     :: EXCEPTION
-                                                  , fs      :: FS
-                                                  , console :: CONSOLE | eff) Unit
-app []     = pure unit
-app directories =
-  case uncons directories of
-    Just { head: x, tail: xs } ->
-      void $ launchAff do
-        files <- readdir x
-        files' <- filterM keepVisibleDirs files
-        liftEff $ log $ show files'
-    Nothing ->
-      pure unit
+app :: forall eff. String -> Eff ( err     :: EXCEPTION
+                                       , fs      :: FS
+                                       , console :: CONSOLE | eff) Unit
+app ""     = pure unit
+app directory =
+  void $ launchAff $ processDirectory directory
+
+processDirectory :: forall eff. String -> Aff ( fs      :: FS
+                                              , console :: CONSOLE
+                                              | eff) Unit
+processDirectory directory = do
+  relativeFiles <- (readdir directory)
+  let files = (\file -> directory <> "\\" <> file) <$> relativeFiles
+  files' <- filterM keepVisibleDirs files
+  liftEff $ log $ show files'
 
 main :: forall eff. Eff ( err     :: EXCEPTION
                         , fs      :: FS
